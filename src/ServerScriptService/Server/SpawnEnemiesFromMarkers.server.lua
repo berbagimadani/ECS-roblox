@@ -1,6 +1,8 @@
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
+local damage = require(script.Parent.handlers.damage) 
+
 local assets = ServerStorage:WaitForChild("Assets")
 local npcFolder = assets:WaitForChild("NPC")
 local enemies = npcFolder:WaitForChild("Enemies") 
@@ -14,12 +16,30 @@ local runtime = Workspace:FindFirstChild("Runtime") or Instance.new("Folder")
 runtime.Name = "Runtime"
 runtime.Parent = Workspace
 
+-- IMPORTANT: folder root musuh harus ada
+local runtimeEnemies = runtime:FindFirstChild("Enemies") or Instance.new("Folder")
+runtimeEnemies.Name = "Enemies"
+runtimeEnemies.Parent = runtime
+
 local function hideMarker(p: BasePart)
 	p.Transparency = 1
 	p.CanCollide = false
 	p.CanTouch = false
 	p.CanQuery = false
 end
+
+local function setupHealthbarFor(clone: Instance)
+	if not clone:IsA("Model") then return end
+
+	local humanoid = clone:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		damage.attachHealthBar(clone, humanoid, nil)
+	else
+		-- fallback kalau pakai attributes Health/MaxHealth di model
+		damage.attachHealthBar(clone, nil, clone)
+	end
+end
+
 
 for _, marker in ipairs(enemyMarkers:GetDescendants()) do
 	if marker:IsA("BasePart") then
@@ -45,7 +65,14 @@ for _, marker in ipairs(enemyMarkers:GetDescendants()) do
 			elseif clone:IsA("BasePart") then
 				clone.CFrame = marker.CFrame
 			end
-			clone.Parent = runtime
+			
+			-- clone.Parent = runtime
+
+			-- spawn ke folder Enemies supaya isEnemyModel() true
+			clone.Parent = runtimeEnemies
+
+			-- pasang healthbar langsung
+			setupHealthbarFor(clone)
 		end
 
 		hideMarker(marker)
