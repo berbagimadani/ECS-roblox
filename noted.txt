@@ -1,0 +1,221 @@
+https://matter-ecs.github.io/matter/docs/GettingStarted
+
+
+Struktur Rojo boleh banget disamain sama struktur di Roblox Studio (Explorer style)
+
+Untuk IntelliSense + “ESLint”-nya Luau di VS Code, kita bisa pakai kombinasi beberapa tool.
+
+Aku bedahin jadi dua bagian 👇
+
+1️⃣ Struktur Rojo: Sama kayak Explorer Roblox?
+
+Yes, itu malah paling enak buat pemula–menengah.
+
+Misal di Studio kamu pengin struktur begini:
+
+ReplicatedStorage
+ └─ Shared
+     └─ matter
+ServerScriptService
+ └─ Server
+     ├─ init.server.lua
+     ├─ components
+     │   ├─ position.lua
+     │   └─ health.lua
+     └─ systems
+         ├─ movementSystem.lua
+         └─ healthSystem.lua
+StarterPlayer
+ └─ StarterPlayerScripts
+     └─ client
+         └─ init.client.lua
+
+
+Di proyek Rojo (folder lokal), kamu bikin mirip:
+
+src
+├─ ReplicatedStorage
+│  └─ Shared
+│     └─ matter
+├─ ServerScriptService
+│  └─ Server
+│     ├─ init.server.lua
+│     ├─ components
+│     └─ systems
+└─ StarterPlayer
+   └─ StarterPlayerScripts
+      └─ client
+         └─ init.client.lua
+
+
+Lalu di default.project.json (Rojo), kamu mapping simpel:
+
+{
+  "name": "MyMatterGame",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$path": "src/ReplicatedStorage/Shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$path": "src/ServerScriptService/Server"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "client": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/client"
+        }
+      }
+    }
+  }
+}
+
+
+Jadi:
+
+Di VS Code kamu lihat folder src/ServerScriptService/Server/...
+
+Di Studio otomatis muncul sebagai ServerScriptService > Server > ...
+➡️ Mental model-nya 1:1, nggak bikin pusing.
+
+2️⃣ IntelliSense & “ESLint” untuk Luau di VS Code
+
+Di dunia Roblox/Luau, “ESLint” versi mereka itu kombinasi:
+
+Language Server → IntelliSense, goto definition, hover docs
+
+Linter → cek style & bug
+
+Formatter → rapiin format (kayak Prettier)
+
+🔹 2.1. Roblox LSP / Luau Language Server (IntelliSense)
+
+Untuk IntelliSense yang bagus di VS Code:
+
+Install extension:
+
+Roblox LSP / Luau Language Server (namanya bisa beda-beda di Marketplace, tapi intinya “Luau LSP / Roblox LSP”)
+
+Pastikan:
+
+Root folder project ada default.project.json
+
+LSP-nya di-config supaya ngerti struktur Rojo (kebanyakan auto detect)
+
+Fitur yang kamu dapat:
+
+Autocomplete fungsi Roblox & Luau
+
+Hover untuk type & docs
+
+Error type-checking (kalau kamu pakai annotation --!strict, --!nonstrict, dll)
+
+Goto definition antar module
+
+🔹 2.2. Linter: Selene (mirip ESLint tapi untuk Luau)
+
+Tool paling populer buat linting Luau: Selene
+
+Flow-nya:
+
+Install Selene (untuk Luau):
+
+Biasanya lewat cargo install selene (butuh Rust), atau pakai binary prebuilt (tergantung OS)
+
+Di project, bikin file config: selene.toml
+Contoh minimal:
+
+std = "roblox"
+
+[config]
+include = ["src"]
+
+
+Di VS Code, install extension:
+
+Selene (kalau ada di marketplace)
+
+Atau gunakan Problem Matcher via task / luar (sedikit lebih advanced)
+
+Selene bisa:
+
+Nandain variable nggak kepakai
+
+Cek pola kode yang berisiko bug
+
+Bantu jagain konsistensi gaya code
+
+🔹 2.3. Formatter: StyLua (kayak Prettier)
+
+Untuk auto-rapihin Luau, pakai StyLua:
+
+Install StyLua:
+
+cargo install stylua
+
+Tambah file stylua.toml di root:
+
+column_width = 100
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 4
+quote_style = "AutoPreferDouble"
+
+
+Di VS Code:
+
+Install extension StyLua / setting formatter ke StyLua
+
+Checklist: "editor.formatOnSave": true
+
+Sekarang tiap save file, code Luau kamu bakal otomatis rapi.
+
+🔹 2.4. Extra: Wally + Rojo + Editor lint
+
+Kalau kamu sudah pakai Rojo, sekalian enak kalau:
+
+Pakai Wally (kayak npm untuk Roblox / Luau)
+
+Misal install Matter, Promise, dll via Wally
+
+Lalu generate Packages yang bisa dibaca Rojo & LSP
+
+Set src sebagai root yang di-scan Selene & StyLua
+
+Rangkuman Praktis Buat Kamu 🎯
+
+Dengan setup kamu sekarang (sudah pakai Rojo), saran setup:
+
+Struktur folder 1:1 dengan Explorer Roblox
+✔ Memudahkan mapping mental & debugging
+
+Tambah tooling di VS Code:
+
+Roblox / Luau LSP → IntelliSense, type checking
+
+Selene → Linter (mirip ESLint)
+
+StyLua → Auto format
+
+(Opsional tapi bagus)
+
+Wally → package manager
+
+Taruh matter di ReplicatedStorage/Shared/matter (atau lewat Wally → Packages)
+
+Kalau kamu mau, di next step aku bisa:
+
+Buatkan contoh selene.toml + stylua.toml + default.project.json yang lengkap khusus untuk project Matter kamu sekarang
+
+Atau bantu review struktur src yang pengin kamu pakai (misalnya game kamu genre apa, nanti kita sesuaikan pattern folder & naming-nya).
+
+
+

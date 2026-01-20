@@ -1,0 +1,5 @@
+std = "roblox"
+
+[config]
+include = ["src"]
+exclude = ["Packages"]
