@@ -51,7 +51,7 @@ local function attachHealthBar(model, humanoid, healthAttrProvider)
 	if humanoid then
 		update(humanoid.Health, humanoid.MaxHealth)
 
-		conn = humanoid.HealthChanged:Connect(function(newHealth)
+		conn = humanoid.HealthChanged:Connect(function(newHealth) 
 			update(newHealth, humanoid.MaxHealth) -- maxHealth dinamis
 		end)
 
